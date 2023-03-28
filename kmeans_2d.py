@@ -11,7 +11,6 @@ def getDataset(file):
     file.close()
     for i in range(len(data)):
         data[i] = [float(data[i][0]), float(data[i][1])]
-    visualisation.draw(data)
     return data
 
 def save(data):
@@ -71,7 +70,7 @@ def kmeans(data, clusters_number):
     mean_distance = 0
     old_mean_distance = float('inf')
     cpt = 0
-    while mean_distance != old_mean_distance or cpt < 8:
+    while mean_distance != old_mean_distance and cpt < 10:
         cpt += 1
         for i in range(len(clusters)):
             clusters[i].clear()
@@ -98,7 +97,7 @@ def kmeans(data, clusters_number):
 best_mean_distance = 100000000000
 best_data = []
 data_in = []
-for i in range(10):
+for i in range(1):
     data = getDataset('./data/2d_data.csv').copy()
     data_in.clear()
     data_in = data.copy()

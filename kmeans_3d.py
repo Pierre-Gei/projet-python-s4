@@ -77,7 +77,7 @@ def kmeans(data, clusters_number):
     mean_distance = 0
     old_mean_distance = float('inf')
     cpt = 0
-    while mean_distance != round(old_mean_distance, 6):
+    while mean_distance != round(old_mean_distance, 7) and cpt < 20:
         cpt += 1
         for i in range(len(clusters)):
             clusters[i].clear()
@@ -106,7 +106,7 @@ def kmeans(data, clusters_number):
 best_mean_distance = 100000000000
 best_data = []
 data_in = []
-for i in range(2):
+for i in range(3):
     data = getDataset('./data/3d_data.csv').copy()
     data_in.clear()
     data_in = data.copy()
