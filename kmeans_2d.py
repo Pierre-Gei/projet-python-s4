@@ -2,6 +2,7 @@ import csv
 import random
 import visualisation
 import numpy as np
+import time
 
 def getDataset(file):
     file = open(file, 'r')
@@ -94,6 +95,7 @@ def kmeans(data, clusters_number):
     print (cpt)
     return data,mean_distance
 
+start_time = time.time()
 best_mean_distance = 100000000000
 best_data = []
 data_in = []
@@ -107,6 +109,11 @@ for i in range(1):
         best_data.clear()
         best_data = data2.copy()
         print (best_mean_distance)
-visualisation.draw(best_data)
 print (best_mean_distance)
 save(best_data)
+exec_time = time.time() - start_time
+dimention = 2
+dataset_size = len(best_data)
+performance_score = dimention* dataset_size / (exec_time*best_mean_distance)
+print (performance_score)
+visualisation.draw(best_data)

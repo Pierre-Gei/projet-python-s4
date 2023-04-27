@@ -4,6 +4,7 @@ import visualisation
 import numpy as np
 import multiprocessing
 import os
+import time
 
 def getDataset(file):
     file = open(file, 'r')
@@ -150,11 +151,18 @@ def run(dataset, clusters_number, number_of_iterations):
     #clean the files
     clean_files(number_of_iterations)
     #visualisation
-    visualisation.draw(data)
-    return best_mean_distance
+    return best_mean_distance,data
 
 
 if __name__ == "__main__":
     multiprocessing.freeze_support()
     dataset = getDataset('./data/2d_data.csv')
-    run(dataset, 10, 5)
+    start_time = time.time()
+    best_mean_distance,data = run(dataset, 10, 10)
+    save(data, "bestdata")
+    exec_time = time.time() - start_time
+    dimention = 2
+    dataset_size = len(data)
+    performance_score = dimention * dataset_size / (exec_time * best_mean_distance)
+    print(performance_score)
+    visualisation.draw(data)
