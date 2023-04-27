@@ -22,45 +22,61 @@ def saveResult(file, data, dimention):
             # go to the next line
             csvfile.write("\n")
 
+def kmeans(data, dimention, NB_CLUSTERS, MAX_ITER):
+    centroids = data[np.random.choice(data.shape[0], NB_CLUSTERS, replace=False), :]
+    clusters = np.array([])
+    iteration = 0
+    convergence = False
+    old_mean_distance = float('inf')
+    mean_distances = float('inf')
+
+    while not convergence and iteration < MAX_ITER:
+        # assign each point to the closest centroid
+        # create a list of clusters
+        distances = np.linalg.norm(data[:, np.newaxis, :] - centroids, axis=2)
+        clusters = np.argmin(distances, axis=1)
+
+        # compute the new centroids
+        new_centroids = np.array([np.mean(data[clusters == i], axis=0) for i in range(NB_CLUSTERS)])
+
+        # check convergence
+        mean_distance = np.mean(np.linalg.norm(centroids - new_centroids, axis=1))
+        if mean_distance == old_mean_distance:
+            convergence = True
+        else:
+            old_mean_distance = mean_distance
+        point_centroid_distances = np.linalg.norm(data - centroids[clusters], axis=1)
+        mean_point_centroid_distance = np.mean(point_centroid_distances)
+        centroids = new_centroids
+        iteration += 1
+        mean_distances = mean_distance
+
+    # format data for visualisation in a single array like this: [[x1, y1, centroid_x, centroid_y], [x2, y2, centroid_x, centroid_y], ...]
+    visualisation_data = np.concatenate((data, centroids[clusters]), axis=1)
+    return visualisation_data, mean_point_centroid_distance
+
+def runKmeans(data, dimention, NB_CLUSTERS, MAX_ITER, NB_RUNS):
+    # run kmeans NB_RUNS times and keep the best result
+    best_result = None
+    best_mean_point_centroid_distance = float('inf')
+    for i in range(NB_RUNS):
+        visualisation_data, mean_point_centroid_distance = kmeans(data, dimention, NB_CLUSTERS, MAX_ITER)
+        if mean_point_centroid_distance < best_mean_point_centroid_distance:
+            best_mean_point_centroid_distance = mean_point_centroid_distance
+            best_result = visualisation_data
+    print("best mean point centroid distance: " + str(best_mean_point_centroid_distance))
+    return best_result
 
 NB_CLUSTERS = 10
 MAX_ITER = 100
 NB_THREADS = 4
+NB_RUNS = 10
 
 data, dimention = getDataset("./data/3d_data.csv")
-centroids = data[np.random.choice(data.shape[0], NB_CLUSTERS, replace=False), :]
-clusters = np.array([])
-iteration = 0
-convergence = False
-old_mean_distance = float('inf')
-mean_distances = float('inf')
-
-while not convergence and iteration < MAX_ITER:
-    # assign each point to the closest centroid
-    # create a list of clusters
-    distances = np.linalg.norm(data[:, np.newaxis, :] - centroids, axis=2)
-    clusters = np.argmin(distances, axis=1)
-
-    # compute the new centroids
-    new_centroids = np.array([np.mean(data[clusters == i], axis=0) for i in range(NB_CLUSTERS)])
-
-    # check convergence
-    mean_distance = np.mean(np.linalg.norm(centroids - new_centroids, axis=1))
-    if mean_distance == round(old_mean_distance, 5):
-        convergence = True
-    else:
-        old_mean_distance = mean_distance
-    centroids = new_centroids
-    iteration += 1
-    mean_distances = mean_distance
-
-# format data for visualisation in a single array like this: [[x1, y1, centroid_x, centroid_y], [x2, y2, centroid_x, centroid_y], ...]
-visualisation_data = np.concatenate((data, centroids[clusters]), axis=1)
-visualisation.draw(visualisation_data)
-
-# print mean distances between each point and its centroid
-print(mean_distances)
-
+out_data = runKmeans(data, dimention, NB_CLUSTERS, MAX_ITER, NB_RUNS)
+visualisation.draw(out_data)
 # save the result in a csv file
-saveResult("./data/3d_data_result.csv", visualisation_data, dimention)
+saveResult("./data/3d_data_result.csv", out_data, dimention)
+
+
 
