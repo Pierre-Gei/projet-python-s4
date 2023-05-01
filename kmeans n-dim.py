@@ -11,15 +11,12 @@ def getDataset(file):
 
 
 def saveResult(file, data, dimention):
-    with open(file, 'w') as csvfile:
+    with open(file, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
         # write header like this: "x1, x2, x3, ..., centroid_x1, centroid_x2, centroid_x3, ..." depending on the dimention
         writer.writerow(["x" + str(i) for i in range(dimention)] + ["centroid_x" + str(i) for i in range(dimention)])
-        csvfile.write("\n")
         for row in data:
             writer.writerow(row)
-            # go to the next line
-            csvfile.write("\n")
 
 def kmeans(data, dimention, NB_CLUSTERS, MAX_ITER):
     centroids = data[np.random.choice(data.shape[0], NB_CLUSTERS, replace=False), :]
@@ -33,9 +30,7 @@ def kmeans(data, dimention, NB_CLUSTERS, MAX_ITER):
         # assign each point to the closest centroid
         # create a list of clusters
         distances = np.linalg.norm(data[:, np.newaxis, :] - centroids, axis=2)
-        print(distances)
         clusters = np.argmin(distances, axis=1)
-        print(clusters)
 
         # compute the new centroids
         new_centroids = np.array([np.mean(data[clusters == i], axis=0) for i in range(NB_CLUSTERS)])
@@ -71,9 +66,9 @@ def runKmeans(data, dimention, NB_CLUSTERS, MAX_ITER, NB_RUNS):
 NB_CLUSTERS = 10
 MAX_ITER = 100
 NB_THREADS = 4
-NB_RUNS = 1
+NB_RUNS = 10
 
-data, dimention = getDataset("./data/mock_2d_data.csv")
+data, dimention = getDataset("./data/3d_data.csv")
 out_data = runKmeans(data, dimention, NB_CLUSTERS, MAX_ITER, NB_RUNS)
 if dimention == 2 or dimention == 3:
     visualisation.draw(out_data)
