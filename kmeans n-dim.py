@@ -73,4 +73,4 @@ out_data = runKmeans(data, dimention, NB_CLUSTERS, MAX_ITER, NB_RUNS)
 if dimention == 2 or dimention == 3:
     visualisation.draw(out_data)
 # save the result in a csv file
-saveResult("./data/3d_data_result.csv", out_data, dimention)
+saveResult("./data/data_result.csv", out_data, dimention)
