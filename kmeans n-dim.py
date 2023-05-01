@@ -1,6 +1,5 @@
 import numpy as np
 import csv
-import multiprocessing
 import visualisation
 
 
@@ -34,7 +33,9 @@ def kmeans(data, dimention, NB_CLUSTERS, MAX_ITER):
         # assign each point to the closest centroid
         # create a list of clusters
         distances = np.linalg.norm(data[:, np.newaxis, :] - centroids, axis=2)
+        print(distances)
         clusters = np.argmin(distances, axis=1)
+        print(clusters)
 
         # compute the new centroids
         new_centroids = np.array([np.mean(data[clusters == i], axis=0) for i in range(NB_CLUSTERS)])
@@ -70,13 +71,11 @@ def runKmeans(data, dimention, NB_CLUSTERS, MAX_ITER, NB_RUNS):
 NB_CLUSTERS = 10
 MAX_ITER = 100
 NB_THREADS = 4
-NB_RUNS = 10
+NB_RUNS = 1
 
-data, dimention = getDataset("./data/3d_data.csv")
+data, dimention = getDataset("./data/mock_2d_data.csv")
 out_data = runKmeans(data, dimention, NB_CLUSTERS, MAX_ITER, NB_RUNS)
-visualisation.draw(out_data)
+if dimention == 2 or dimention == 3:
+    visualisation.draw(out_data)
 # save the result in a csv file
 saveResult("./data/3d_data_result.csv", out_data, dimention)
-
-
-
